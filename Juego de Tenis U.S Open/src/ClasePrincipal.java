@@ -1,0 +1,129 @@
+import java.util.Random;
+import java.util.Scanner;
+
+public class ClasePrincipal {
+	public enum Lados {
+		IZQUIERDA, DERECHA;
+	}
+	static Lados ladoUsuario = Lados.DERECHA;
+	static Lados ladoPC = Lados.DERECHA;
+	static int puntosUsuario=0;
+	static int puntosPC=0;
+	// Random
+	static Random rdm = new Random();
+	
+	
+	public static void main(String[] args) {
+		Scanner entrada = new Scanner(System.in);
+		// Variables De jugadore
+		String jugadorPC = null;
+		String jugadorUsuario = null;
+		// Variables de saque
+		int OrdenDeSaque = 1;
+
+		// Variables De direccion
+		String Direccion1;
+		int Direccion=0;
+		// Varibles de los puntos
+		
+		// ArregloJugadores
+		String[] JugadoresTenis = { "Alexander Zverev", "Serena Williams", "Rafael Nadal", "Naomi Osaka",
+				"Kei Nishikori" };
+
+		// ConfiguracionDeLosJUGADORES
+		jugadorUsuario = "Edwin";// ColocarNombreDeUsuario(jugadorUsuario,entrada);
+		jugadorPC = ColocarNombreDePC(jugadorPC, JugadoresTenis);
+
+		do {// Realiza la asignacion del orden de saque de los jugadores
+			OrdenDeSaque = 1; // rdm.nextInt(3);
+		} while (OrdenDeSaque < 1);
+		
+		if (OrdenDeSaque == 1) {	
+			System.out.println("\nSaca: " + jugadorUsuario);
+			SaqueJugador(Direccion, entrada);
+			
+		} else {
+			System.out.println("\nSaca: " + jugadorPC);
+			SaquePC(Direccion);
+		}
+		System.out.println("Los puntos de la Pc son :" + puntosPC);
+		System.out.println("Los puntos de la Usuario son :" + puntosUsuario);
+	}
+
+	private static void SaqueJugador(int DireccionDeSalida, Scanner entrada) {
+		System.out.printf("\nIngrese el numero de la Direccion deseada: \n1.DERECHA \n2.IZQUIERDA\n");
+		DireccionDeSalida = entrada.nextInt();
+		if (DireccionDeSalida == 1) {
+			ladoUsuario = Lados.DERECHA;
+		} else {
+			ladoUsuario = Lados.IZQUIERDA;
+		}
+		RealizarPausa();
+		System.out.println("\n Direccion de saque: " + ladoUsuario);
+		for(int i=0; i<10; i++) {
+			RematePC(DireccionDeSalida);	
+		}
+		
+	}
+
+	private static void RematePC(int DireccionDeSalida) {
+		System.out.println("Realizando Remate la PC");
+		RealizarPausa();
+		do {// Realiza la asignacion la direccion en que sale la bola
+			DireccionDeSalida = rdm.nextInt(3);
+		} while (DireccionDeSalida  < 1);
+
+		if (DireccionDeSalida == 1) {
+			ladoPC = Lados.DERECHA;
+		} else {
+			ladoPC = Lados.IZQUIERDA;
+		}
+		if(ladoPC == ladoUsuario) {
+			puntosPC += 1;
+		}else {
+			puntosUsuario += 1;
+		}
+		
+	}
+	private static void SaquePC(int DireccionDeSalida) {
+		do {// Realiza la asignacion la direccion en que sale la bola
+			DireccionDeSalida = rdm.nextInt(3);
+		} while (DireccionDeSalida  < 1);
+
+		if (DireccionDeSalida == 1) {
+			ladoPC = Lados.DERECHA;
+		} else {
+			ladoPC = Lados.IZQUIERDA;
+		}
+		RealizarPausa();
+	}
+
+	private static void RealizarPausa() {
+		int TiempoDeEspera = 1000;
+		try {
+			System.out.println("Pausa del juego (Programa)");
+			Thread.sleep(TiempoDeEspera); // Con esto se realiza la pausa del programa.
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+
+	}
+
+	private static String ColocarNombreDePC(String jugadorPC, String[] JugadoresTenis) {
+		jugadorPC = JugadoresTenis[rdm.nextInt(JugadoresTenis.length)];
+		System.out.printf("\nEl jugador 2: " + jugadorPC);
+		System.out.printf("\n");
+		return jugadorPC;// Retorna el nombre del jugador de la PC
+	}
+
+	private static String ColocarNombreDeUsuario(String jugadorUsuario, Scanner entrada) {
+		// TODO Auto-generated method stub
+		System.out.print("¨US OPEN¨");
+		System.out.print("\nIngrese el nombre del Jugador 1: ");
+		jugadorUsuario = entrada.nextLine();
+		System.out.print("\nEl jugador 1: " + jugadorUsuario);
+		return jugadorUsuario; // Retorna el nombre del jugador del usuario
+
+	}
+
+}
