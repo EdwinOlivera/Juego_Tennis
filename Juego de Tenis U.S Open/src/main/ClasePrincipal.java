@@ -8,25 +8,26 @@ public class ClasePrincipal {
 	public enum Lados {
 		IZQUIERDA, DERECHA;
 	}
-
 	public enum Estado {
 		INDEFINIDO, PERDIO, GANO, EMPATE;
 	}
-
 	public enum Turno {
 		USUARIO, PC;
 	}
-
 	public enum SaqueIncial {
 		USUARIO, PC;
 	}
-
+	public enum Golpe{
+		ACERTO, FALLO;
+	}
 	static Lados ladoPC = Lados.DERECHA; // Lado de lanzamiento de la PC
 	static Lados ladoUsuario = Lados.DERECHA; // Lado de lanzamiento del Usuario
 	static Estado Estados = Estado.INDEFINIDO;
-	static Turno turnoActual;//Establece el turno del lanzador que sigue
+	static Turno turnoActual;	//Establece el turno del lanzador que sigue
 	static SaqueIncial PrimerSaque;
+	static Golpe golpe;	//Define si acierta o falla un golpe
 	// ***************************
+	
 	// Variables para los puntos globales
 	static int puntosUsuario = 0;
 	static int puntosPC = 0;
@@ -67,7 +68,7 @@ public class ClasePrincipal {
 		//Este switch realiza el primer saque 
 		switch (PrimerSaque) {
 		case USUARIO:
-			SaqueJugador(Direccion, entrada);
+			SaqueUsuario(Direccion, entrada);
 			break;
 		case PC:
 			SaquePC(Direccion);
@@ -78,7 +79,7 @@ public class ClasePrincipal {
 		System.out.println("******Final del Programa********");
 	}
 
-	private static void SaqueJugador(int DireccionDeSalida, Scanner entrada) {
+	private static void SaqueUsuario(int DireccionDeSalida, Scanner entrada) {
 		System.out.printf("\nIngrese el numero de la Direccion deseada: \n1.DERECHA \n2.IZQUIERDA\n");
 		DireccionDeSalida = entrada.nextInt();
 		if (DireccionDeSalida == 1) {
@@ -86,11 +87,12 @@ public class ClasePrincipal {
 		} else {
 			ladoUsuario = Lados.IZQUIERDA;
 		}
-		RealizarPausa();
-		System.out.println("\n Direccion de saque: " + ladoUsuario);
-		for (int i = 0; i < 10; i++) {
+		turnoActual = Turno.PC;
+		//RealizarPausa();
+		System.out.println("\nDireccion de saque: " + ladoUsuario);
+		
 			RematePC(DireccionDeSalida);
-		}
+		
 
 	}
 	private static void RematePC(int DireccionDeSalida) {
@@ -105,10 +107,13 @@ public class ClasePrincipal {
 		} else {
 			ladoPC = Lados.IZQUIERDA;
 		}
+		
 		if (ladoPC == ladoUsuario) {
+			golpe = Golpe.ACERTO;
 			puntosPC += 1;
 		} else {
-			puntosUsuario += 1;
+			golpe = Golpe.FALLO;
+			puntosUsuario += 15;
 		}
 
 	}
@@ -122,6 +127,7 @@ public class ClasePrincipal {
 		} else {
 			ladoPC = Lados.IZQUIERDA;
 		}
+		turnoActual = Turno.USUARIO;
 		RealizarPausa();
 	}
 	private static void RealizarPausa() {
