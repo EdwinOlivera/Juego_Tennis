@@ -102,19 +102,17 @@ public class ClasePrincipal {
 			}
 
 		} while (estado == Estados.INDEFINIDO);
-		System.out.println("Los puntos de "+jugadorUsuario+" son :" + puntosUsuario);
-		System.out.println("Los puntos de "+jugadorPC+" son :" + puntosPC);
-		System.out.println("******Final del Programa********");
+		System.out.println("Los puntos de " + jugadorUsuario + " son :" + puntosUsuario);
+		System.out.println("Los puntos de " + jugadorPC + " son :" + puntosPC);
+		System.out.println("******Final del JUEGO********");
 	}
 
 	private static void TurnoPC(int DireccionDeSalida) {
 		System.out.println("Turno de la PC");
 		RealizarPausa();
-		do {// Realiza la asignacion la direccion en que le pega a la bola
-			DireccionDeSalida = rdm.nextInt(3);
-		} while (DireccionDeSalida < 1);
-
-		if (DireccionDeSalida == 1) {
+		
+		DireccionDeSalida = rdm.nextInt(100 + 1);
+		if (DireccionDeSalida > 0 && DireccionDeSalida <= 50) {
 			ladoPC = Lados.DERECHA;
 		} else {
 			ladoPC = Lados.IZQUIERDA;
@@ -126,11 +124,12 @@ public class ClasePrincipal {
 		} else {
 			golpe = Golpes.FALLO;
 			AsignarPuntosUsuario();
-			if(estado == Estados.INDEFINIDO) {
-				RealizarSaque(DireccionDeSalida);	
-			}	
+			if (estado == Estados.INDEFINIDO) {
+				RealizarSaque(DireccionDeSalida);
+			}
 		}
 	}
+
 	private static void TurnoUsuario(int DireccionDeSalida, Scanner entrada) {
 		System.out.printf("\nIngrese el numero de la Direccion deseada Pegar: \n1.DERECHA \n2.IZQUIERDA\n");
 		do {
@@ -153,13 +152,13 @@ public class ClasePrincipal {
 		} else {
 			golpe = Golpes.FALLO;
 			AsignarPuntosPC();
-			if(estado == Estados.INDEFINIDO) {
-				RealizarSaque(DireccionDeSalida);	
+			if (estado == Estados.INDEFINIDO) {
+				RealizarSaque(DireccionDeSalida);
 			}
 		}
 
-		
 	}
+
 	private static void AsignarPuntosPC() {
 		switch (sumarPuntosPC) {
 		case NINGUNO:
@@ -180,7 +179,7 @@ public class ClasePrincipal {
 				System.out.println("Ha ganado la PC");
 				jugadorQueGano = JugadorGanadores.PC;
 				estado = Estados.GANO;
-			}else if(puntosUsuario == puntosPC) {
+			} else if (puntosUsuario == puntosPC) {
 				System.out.println("Se ha empatado el partido");
 				jugadorQueGano = JugadorGanadores.INDEFINIDO;
 				estado = Estados.EMPATE;
@@ -190,11 +189,9 @@ public class ClasePrincipal {
 		case CUARTO:
 			System.out.println("Falta definir la cuarta suma para la PC");
 			break;
-
-		default:
-			break;
 		}
 	}
+
 	private static void AsignarPuntosUsuario() {
 		switch (sumarPuntosUsuario) {
 		case NINGUNO:
@@ -215,7 +212,7 @@ public class ClasePrincipal {
 				System.out.println("Ha ganado El usuario");
 				jugadorQueGano = JugadorGanadores.USUARIO;
 				estado = Estados.GANO;
-			}else if(puntosUsuario == puntosPC) {
+			} else if (puntosUsuario == puntosPC) {
 				System.out.println("Se ha empatado el partido");
 				jugadorQueGano = JugadorGanadores.INDEFINIDO;
 				estado = Estados.EMPATE;
@@ -229,6 +226,7 @@ public class ClasePrincipal {
 			break;
 		}
 	}
+
 	private static void SaqueUsuario(int DireccionDeSalida, Scanner entrada) {
 		MostrarPuntos();
 		System.out.printf("\nEl usario hara un SAQUE");
@@ -243,15 +241,14 @@ public class ClasePrincipal {
 		// RealizarPausa();
 		System.out.println("\nDireccion de saque: " + ladoUsuario);
 	}
+
 	private static void SaquePC(int DireccionDeSalida) {
 		MostrarPuntos();
 		System.out.println("La PC esta realizando el SAQUE");
 		RealizarPausa();
-		do {// Realiza la asignacion la direccion en que sale la bola
-			DireccionDeSalida = rdm.nextInt(3);
-		} while (DireccionDeSalida < 1);
+		DireccionDeSalida = rdm.nextInt(100 + 1);
 
-		if (DireccionDeSalida == 1) {
+		if (DireccionDeSalida > 0 && DireccionDeSalida <= 50) {
 			ladoPC = Lados.DERECHA;
 		} else {
 			ladoPC = Lados.IZQUIERDA;
@@ -259,6 +256,7 @@ public class ClasePrincipal {
 		turnoActual = Turnos.USUARIO;
 
 	}
+
 	private static void RealizarSaque(int DireccionDeSalida) {
 		switch (primerSaque) {
 		case USUARIO:
@@ -273,8 +271,9 @@ public class ClasePrincipal {
 		}
 
 	}
+
 	private static void RealizarPausa() {
-		//MostrarPuntos();
+		// MostrarPuntos();
 		int TiempoDeEspera = 1000;
 		try {
 			for (int i = 0; i < 10; i++) {
@@ -287,16 +286,19 @@ public class ClasePrincipal {
 			Thread.currentThread().interrupt();
 		}
 	}
+
 	private static void MostrarPuntos() {
 		System.out.println("Los puntos de " + jugadorUsuario + " son : " + puntosUsuario);
 		System.out.println("Los puntos de " + jugadorPC + " son : " + puntosPC);
 	}
+
 	private static String ColocarNombreDePC(String jugadorPC, String[] JugadoresTenis) {
 		jugadorPC = JugadoresTenis[rdm.nextInt(JugadoresTenis.length)];
 		System.out.printf("\nEl jugador 2: " + jugadorPC);
 		System.out.printf("\n");
 		return jugadorPC;// Retorna el nombre del jugador de la PC
 	}
+
 	private static String ColocarNombreDeUsuario(String jugadorUsuario, Scanner entrada) {
 		// TODO Auto-generated method stub
 		System.out.print("¨US OPEN¨");
