@@ -112,7 +112,7 @@ public class ClasePrincipal {
 		RealizarPausa();
 		
 		DireccionDeSalida = rdm.nextInt(100 + 1);
-		if (DireccionDeSalida > 0 && DireccionDeSalida <= 50) {
+		if (DireccionDeSalida <= 50) {
 			ladoPC = Lados.DERECHA;
 		} else {
 			ladoPC = Lados.IZQUIERDA;
@@ -248,7 +248,7 @@ public class ClasePrincipal {
 		RealizarPausa();
 		DireccionDeSalida = rdm.nextInt(100 + 1);
 
-		if (DireccionDeSalida > 0 && DireccionDeSalida <= 50) {
+		if (DireccionDeSalida <= 50) {
 			ladoPC = Lados.DERECHA;
 		} else {
 			ladoPC = Lados.IZQUIERDA;
