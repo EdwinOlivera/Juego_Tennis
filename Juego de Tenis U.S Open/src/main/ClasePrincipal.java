@@ -211,7 +211,7 @@ public class ClasePrincipal {
 			break;
 		case TERCERO:
 			puntosUsuario += 0;
-			if (puntosPC < 85) {
+			if (puntosPC < puntosUsuario) {
 				System.out.println("Ha ganado El usuario");
 				jugadorQueGano = JugadorGanadores.USUARIO;
 				estado = Estados.GANO;
