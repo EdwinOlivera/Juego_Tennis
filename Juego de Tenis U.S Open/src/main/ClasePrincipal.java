@@ -1,3 +1,6 @@
+//Laura Karina Chincilla Chincilla 20152100165
+//Fabiana Yamaly Artiaga Portillo 20151000019
+
 package main;
 
 import java.util.Random;
@@ -5,8 +8,18 @@ import java.util.Scanner;
 
 public class ClasePrincipal {
 	// Definiendo a los Enum con sus difernete estados y objetos
-	public enum AsignarPuntos {
-		NINGUNO, PRIMERO, SEGUNDO, TERCERO, CUARTO;
+	public enum SetRealizados{
+		NINGUNO, PRIMERO, SEGUNDO, TERCERO;
+	}
+	public enum JuegosRealizados {
+		NINGUNO, 
+		PRIMERO, 
+		SEGUNDO, 
+		TERCERO, CUARTO, QUINTO, SEXTO, SEPTIMO, OCTAVO, NOVENO, DECIMO, UNDECIMO;
+	}
+
+	public enum PuntosAsignados {
+		NINGUNO, PRIMERO, SEGUNDO, TERCERO;
 	}
 
 	public enum Lados {
@@ -14,7 +27,7 @@ public class ClasePrincipal {
 	}
 
 	public enum Estados {
-		INDEFINIDO, PERDIO, GANO, EMPATE;
+		INDEFINIDO, GANO, EMPATE;
 	}
 
 	public enum Turnos {
@@ -33,6 +46,9 @@ public class ClasePrincipal {
 		INDEFINIDO, PC, USUARIO;
 	}
 
+	static SetRealizados SetTerminados = SetRealizados.NINGUNO;
+	static JuegosRealizados games = JuegosRealizados.NINGUNO;
+	
 	static JugadorGanadores jugadorQueGano = JugadorGanadores.INDEFINIDO;
 	static Lados ladoPC = Lados.DERECHA; // Lado de lanzamiento de la PC
 	static Lados ladoUsuario = Lados.DERECHA; // Lado de lanzamiento del Usuario
@@ -40,16 +56,19 @@ public class ClasePrincipal {
 	static Turnos turnoActual; // Establece el turno del lanzador que sigue
 	static SaqueInciales primerSaque;
 	static Golpes golpe; // Define si acierta o falla un golpe
-	static AsignarPuntos sumarPuntosPC = AsignarPuntos.NINGUNO;
-	static AsignarPuntos sumarPuntosUsuario = AsignarPuntos.NINGUNO;
+	static PuntosAsignados sumarPuntosPC = PuntosAsignados.NINGUNO;
+	static PuntosAsignados sumarPuntosUsuario = PuntosAsignados.NINGUNO;
 	// ***************************
 
-	static String jugadorPC = null;
+	static String jugadorPC = null;// Son los que se usan para determinar el nombre de los jugadores
 	static String jugadorUsuario = null;
 
 	// Variables para los puntos globales
 	static int puntosUsuario = 0;
 	static int puntosPC = 0;
+	static int marcadorPC = 0;
+	static int marcadorUsuario = 0;
+	
 	// Random
 	static Random rdm = new Random();
 	static Scanner entrada = new Scanner(System.in);
@@ -59,7 +78,7 @@ public class ClasePrincipal {
 		// Variables de saque
 		int OrdenDeSaque = 1;
 
-		// Variables De direccion
+		// Variables De direccion Para la PC en random y el usuario lo ingresa
 		int Direccion = 0;
 
 		// ArregloJugadores para la PC
@@ -67,11 +86,11 @@ public class ClasePrincipal {
 				"Kei Nishikori" };
 
 		// ConfiguracionDeLosJUGADORES
-		jugadorUsuario = "Edwin";// ColocarNombreDeUsuario(jugadorUsuario,entrada);
+		jugadorUsuario = ColocarNombreDeUsuario(jugadorUsuario, entrada);
 		jugadorPC = ColocarNombreDePC(jugadorPC, JugadoresTenis);
 
 		do {// Realiza la asignacion del orden de saque de los jugadores
-			OrdenDeSaque = 1; // rdm.nextInt(3);
+			OrdenDeSaque = rdm.nextInt(3);
 		} while (OrdenDeSaque < 1);
 		RealizarPausa();
 		if (OrdenDeSaque == 1) {
@@ -91,28 +110,107 @@ public class ClasePrincipal {
 			break;
 		}
 
+		GameActual(Direccion);// Esta funcion realiza los game de cada partido
+		System.out.println("Los puntos de " + jugadorUsuario + " son :" + puntosUsuario);
+		System.out.println("Los puntos de " + jugadorPC + " son :" + puntosPC);
+		System.out.println("******Final del Juego********");
+	}
+
+	private static void GameActual(int DireccionDeTiro) {
 		do {
 			switch (turnoActual) {
 			case USUARIO:
-				TurnoUsuario(Direccion, entrada);
+				TurnoUsuario(DireccionDeTiro, entrada);
 				break;
 			case PC:
-				TurnoPC(Direccion);
+				TurnoPC(DireccionDeTiro);
 				break;
 			}
 
 		} while (estado == Estados.INDEFINIDO);
-		System.out.println("Los puntos de " + jugadorUsuario + " son :" + puntosUsuario);
-		System.out.println("Los puntos de " + jugadorPC + " son :" + puntosPC);
-		System.out.println("******Final del JUEGO********");
+		CambioDeGames();
+	}
+
+	private static void CambioDeGames() {
+		SumarMarcador();
+		switch (games) {
+		case NINGUNO:
+			games = JuegosRealizados.PRIMERO;
+			break;
+		case PRIMERO:
+			games = JuegosRealizados.SEGUNDO;
+			break;
+		case SEGUNDO:
+			games = JuegosRealizados.TERCERO;
+			break;
+		case TERCERO:
+			games = JuegosRealizados.CUARTO;
+			break;
+		case CUARTO:
+			games = JuegosRealizados.QUINTO;
+			break;
+		case QUINTO:
+			games = JuegosRealizados.SEXTO;
+			break;
+		case SEXTO:
+			games = JuegosRealizados.SEPTIMO;
+			break;
+		case SEPTIMO:
+			games = JuegosRealizados.OCTAVO;
+			break;
+		case OCTAVO:
+			games = JuegosRealizados.NOVENO;
+			break;
+		case NOVENO:
+			games = JuegosRealizados.DECIMO;
+			break;
+		case DECIMO:
+			games = JuegosRealizados.NINGUNO;
+			estado = Estados.INDEFINIDO;
+			break;
+		default:
+			System.out.println("Fuera del rango del Game");
+			break;
+		}
+
+	}
+
+	private static void SumarMarcador() {
+		switch (jugadorQueGano) {
+		case PC:
+			marcadorPC += 1;
+			break;
+		case USUARIO:
+			marcadorUsuario += 1;
+			break;
+
+		default:
+			break;
+		}	
+		if(marcadorPC==6) {
+			System.out.println("Gano el SET actual " + jugadorPC);
+			
+			MostrarPuntosDeSet();
+		}else if(marcadorUsuario == 6) {
+			System.out.println("Gano el SET acutal " + jugadorUsuario);
+			MostrarPuntosDeSet();
+		}
+		
+	}
+
+	private static void MostrarPuntosDeSet() {
+		System.out.println("El");
+		
 	}
 
 	private static void TurnoPC(int DireccionDeSalida) {
 		System.out.println("Turno de la PC");
 		RealizarPausa();
-		
-		DireccionDeSalida = rdm.nextInt(100 + 1);
-		if (DireccionDeSalida <= 50) {
+		do {// Realiza la asignacion la direccion en que le pega a la bola
+			DireccionDeSalida = rdm.nextInt(3);
+		} while (DireccionDeSalida < 1);
+
+		if (DireccionDeSalida == 1) {
 			ladoPC = Lados.DERECHA;
 		} else {
 			ladoPC = Lados.IZQUIERDA;
@@ -151,6 +249,7 @@ public class ClasePrincipal {
 			System.out.println("\nDireccion del Golpe: " + ladoUsuario);
 		} else {
 			golpe = Golpes.FALLO;
+			System.out.println("\nDireccion del Golpe: " + ladoUsuario);
 			AsignarPuntosPC();
 			if (estado == Estados.INDEFINIDO) {
 				RealizarSaque(DireccionDeSalida);
@@ -162,19 +261,19 @@ public class ClasePrincipal {
 	private static void AsignarPuntosPC() {
 		switch (sumarPuntosPC) {
 		case NINGUNO:
-			puntosPC += 15;
-			sumarPuntosPC = AsignarPuntos.PRIMERO;
+			puntosPC = 15;
+			sumarPuntosPC = PuntosAsignados.PRIMERO;
 			break;
 		case PRIMERO:
-			puntosPC += 30;
-			sumarPuntosPC = AsignarPuntos.SEGUNDO;
+			puntosPC = 30;
+			sumarPuntosPC = PuntosAsignados.SEGUNDO;
 			break;
 		case SEGUNDO:
-			puntosPC += 40;
-			sumarPuntosPC = AsignarPuntos.TERCERO;
+			puntosPC = 40;
+			sumarPuntosPC = PuntosAsignados.TERCERO;
 			break;
 		case TERCERO:
-			puntosPC += 1;
+			puntosPC += 0;
 			if (puntosUsuario < puntosPC) {
 				System.out.println("Ha ganado la PC");
 				jugadorQueGano = JugadorGanadores.PC;
@@ -184,10 +283,10 @@ public class ClasePrincipal {
 				jugadorQueGano = JugadorGanadores.INDEFINIDO;
 				estado = Estados.EMPATE;
 			}
-			sumarPuntosPC = AsignarPuntos.CUARTO;
+
 			break;
-		case CUARTO:
-			System.out.println("Falta definir la cuarta suma para la PC");
+
+		default:
 			break;
 		}
 	}
@@ -195,16 +294,16 @@ public class ClasePrincipal {
 	private static void AsignarPuntosUsuario() {
 		switch (sumarPuntosUsuario) {
 		case NINGUNO:
-			puntosUsuario += 15;
-			sumarPuntosUsuario = AsignarPuntos.PRIMERO;
+			puntosUsuario = 15;
+			sumarPuntosUsuario = PuntosAsignados.PRIMERO;
 			break;
 		case PRIMERO:
-			puntosUsuario += 30;
-			sumarPuntosUsuario = AsignarPuntos.SEGUNDO;
+			puntosUsuario = 30;
+			sumarPuntosUsuario = PuntosAsignados.SEGUNDO;
 			break;
 		case SEGUNDO:
-			puntosUsuario += 40;
-			sumarPuntosUsuario = AsignarPuntos.TERCERO;
+			puntosUsuario = 40;
+			sumarPuntosUsuario = PuntosAsignados.TERCERO;
 			break;
 		case TERCERO:
 			puntosUsuario += 0;
@@ -218,27 +317,31 @@ public class ClasePrincipal {
 				estado = Estados.EMPATE;
 			}
 			break;
-		case CUARTO:
-			System.out.println("Falta definir la cuarta suma el Usuario");
-			break;
-
 		default:
 			break;
 		}
+
 	}
 
 	private static void SaqueUsuario(int DireccionDeSalida, Scanner entrada) {
 		MostrarPuntos();
 		System.out.printf("\nEl usario hara un SAQUE");
 		System.out.printf("\nIngrese el numero de la Direccion deseada hacer el SAQUE: \n1.DERECHA \n2.IZQUIERDA\n");
-		DireccionDeSalida = entrada.nextInt();
+		do {
+			DireccionDeSalida = entrada.nextInt();
+
+			if (DireccionDeSalida < 1 || DireccionDeSalida > 2) {
+				System.out.println("Ha ingresado un valor fuera de rango");
+			}
+		} while (DireccionDeSalida < 1 || DireccionDeSalida > 2);
+
 		if (DireccionDeSalida == 1) {
 			ladoUsuario = Lados.DERECHA;
 		} else {
 			ladoUsuario = Lados.IZQUIERDA;
 		}
 		turnoActual = Turnos.PC;
-		// RealizarPausa();
+
 		System.out.println("\nDireccion de saque: " + ladoUsuario);
 	}
 
@@ -246,9 +349,11 @@ public class ClasePrincipal {
 		MostrarPuntos();
 		System.out.println("La PC esta realizando el SAQUE");
 		RealizarPausa();
-		DireccionDeSalida = rdm.nextInt(100 + 1);
+		do {// Realiza la asignacion la direccion en que sale la bola
+			DireccionDeSalida = rdm.nextInt(3);
+		} while (DireccionDeSalida < 1);
 
-		if (DireccionDeSalida <= 50) {
+		if (DireccionDeSalida == 1) {
 			ladoPC = Lados.DERECHA;
 		} else {
 			ladoPC = Lados.IZQUIERDA;
@@ -300,9 +405,8 @@ public class ClasePrincipal {
 	}
 
 	private static String ColocarNombreDeUsuario(String jugadorUsuario, Scanner entrada) {
-		// TODO Auto-generated method stub
 		System.out.print("¨US OPEN¨");
-		System.out.print("\nIngrese el nombre del Jugador 1: ");
+		System.out.print("\nIngrese SU nombre de jugador (Usuario): ");
 		jugadorUsuario = entrada.nextLine();
 		System.out.print("\nEl jugador 1: " + jugadorUsuario);
 		return jugadorUsuario; // Retorna el nombre del jugador del usuario
