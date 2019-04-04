@@ -8,6 +8,18 @@ import java.util.Scanner;
 
 public class ClasePrincipal {
 	// Definiendo a los Enum con sus difernete estados y objetos
+	public enum TipoJuegos {
+		NORMAL, DEUCE;
+	}
+
+	public enum JugadorConVentajas {
+		NINGUNO, PC, USUARIO;
+	}
+
+	public enum cantidadDeVentajas {
+		NIGUNA, PRIMERA, SEGUNDA;
+	}
+
 	public enum SetRealizados {
 		NINGUNO, PRIMERO, SEGUNDO, TERCERO;
 	}
@@ -47,6 +59,12 @@ public class ClasePrincipal {
 	static SetRealizados SetTerminados = SetRealizados.NINGUNO;
 	static JuegosRealizados games = JuegosRealizados.NINGUNO;
 
+	static TipoJuegos tipoDeJuego = TipoJuegos.NORMAL;
+	static JugadorConVentajas JugadorConLaVentaja = JugadorConVentajas.NINGUNO;
+	static cantidadDeVentajas NumeroDeVentaja = cantidadDeVentajas.NIGUNA;
+	static int VentajaPC = 0;
+	static int VentajaUSUARIO = 0;
+
 	static JugadorGanadores jugadorQueGano = JugadorGanadores.INDEFINIDO;
 	static Lados ladoPC = Lados.DERECHA; // Lado de lanzamiento de la PC
 	static Lados ladoUsuario = Lados.DERECHA; // Lado de lanzamiento del Usuario
@@ -57,6 +75,9 @@ public class ClasePrincipal {
 	static PuntosAsignados sumarPuntosPC = PuntosAsignados.NINGUNO;
 	static PuntosAsignados sumarPuntosUsuario = PuntosAsignados.NINGUNO;
 	// ***************************
+
+	static int GameGanadoPC = 0;
+	static int GameGanadoUSUARIO = 0;
 
 	static String jugadorPC = null;// Son los que se usan para determinar el nombre de los jugadores
 	static String jugadorUsuario = null;
@@ -93,7 +114,7 @@ public class ClasePrincipal {
 			OrdenDeSaque = rdm.nextInt(3);
 		} while (OrdenDeSaque < 1);
 		RealizarPausa();
-		
+
 		if (OrdenDeSaque == 1) {
 			primerSaque = SaqueInciales.USUARIO;
 			System.out.println("\nSaca Incialmente: " + jugadorUsuario);
@@ -101,7 +122,7 @@ public class ClasePrincipal {
 			primerSaque = SaqueInciales.PC;
 			System.out.println("\nSaca Incialmente: " + jugadorPC);
 		}
-		
+
 		// Este switch realiza el primer saque
 		switch (primerSaque) {
 		case USUARIO:
@@ -127,6 +148,7 @@ public class ClasePrincipal {
 					break;
 				}
 			} while (estado == Estados.INDEFINIDO);
+			
 			MostrarPuntosDeGAME();
 			if (estado != Estados.INDEFINIDO) {
 				System.out.println("Se hara un cambio de GAME");
@@ -134,7 +156,6 @@ public class ClasePrincipal {
 			}
 		} while (games != JuegosRealizados.FINSET);
 	}
-
 	private static void CambioDeGames() {
 		SumarMarcador();
 		RealizarPausa();
@@ -194,72 +215,10 @@ public class ClasePrincipal {
 		RestablecerGAME();
 	}
 
-	private static void RestablecerGAME() {
-		estado = Estados.INDEFINIDO; // Esto hace que no tenga ningun ganador del GAME actual.
-		// Estos son los enum que tienen que reestablcerse para el gamen actual
-		jugadorQueGano = JugadorGanadores.INDEFINIDO;
-		sumarPuntosPC = PuntosAsignados.NINGUNO;
-		sumarPuntosUsuario = PuntosAsignados.NINGUNO;
-		puntosPC = 0;
-		puntosUsuario = 0;
-		// *******************************
-		if (games != JuegosRealizados.FINSET) {
-			switch (primerSaque) {// Aqui se hace el cambio de SAQUE despues de terminar un GAME
-			case PC:
-				primerSaque = SaqueInciales.USUARIO;
-				RealizarSaque(DireccionDegolpe);
-				break;
-			case USUARIO:
-				primerSaque = SaqueInciales.PC;
-				RealizarSaque(DireccionDegolpe);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	private static void SumarMarcador() {
-		switch (jugadorQueGano) {
-		case PC:
-			marcadorPC += 1;
-			break;
-		case USUARIO:
-			marcadorUsuario += 1;
-			break;
-
-		default:
-			break;
-		}
-		if (marcadorPC == 6) {
-			System.out.println("Gano el SET actual " + jugadorPC);
-			games = JuegosRealizados.FINSET;
-			estado = Estados.INDEFINIDO;
-			MostrarPuntosDeSet();
-		} else if (marcadorUsuario == 6) {
-			System.out.println("Gano el SET acutal " + jugadorUsuario);
-			games = JuegosRealizados.FINSET;
-			estado = Estados.INDEFINIDO;
-			MostrarPuntosDeSet();
-		}
-
-	}
-
-	private static void MostrarPuntosDeGAME() {
-		System.out.println("******--------********");
-		System.out.println("Los puntos de " + jugadorUsuario + " al final del GAME son :" + puntosUsuario);
-		System.out.println("Los puntos de " + jugadorPC + " al final del GAME son :" + puntosPC);
-		System.out.println("******--------********");
-
-	}
-
-	private static void MostrarPuntosDeSet() {
-		System.out.println("Falta definir como mostrar los puntos al final de los SETs");
-	}
-
 	private static void TurnoPC(int DireccionDeSalida) {
 		System.out.println("Turno de la PC");
 		RealizarPausa();
+		
 		do {// Realiza la asignacion la direccion en que le pega a la bola
 			DireccionDeSalida = rdm.nextInt(3);
 		} while (DireccionDeSalida < 1);
@@ -273,7 +232,9 @@ public class ClasePrincipal {
 		if (ladoPC == ladoUsuario) {
 			golpe = Golpes.ACERTO;
 			turnoActual = Turnos.USUARIO;
+			System.out.println(jugadorPC+" ha hacertado el golpe.");
 		} else {
+			System.out.println(jugadorPC+" ha fallado el golpe.");
 			golpe = Golpes.FALLO;
 			AsignarPuntosUsuario();
 			if (estado == Estados.INDEFINIDO) {
@@ -300,9 +261,11 @@ public class ClasePrincipal {
 		if (ladoUsuario == ladoPC) {
 			turnoActual = Turnos.PC;
 			golpe = Golpes.ACERTO;
+			System.out.println(jugadorUsuario+" ha hacertado el golpe. :-)");
 			System.out.println("\nDireccion del Golpe: " + ladoUsuario);
 		} else {
 			golpe = Golpes.FALLO;
+			System.out.println(jugadorUsuario+" ha Fallado el golpe. :-(");
 			System.out.println("\nDireccion del Golpe: " + ladoUsuario);
 			AsignarPuntosPC();
 			if (estado == Estados.INDEFINIDO) {
@@ -312,74 +275,175 @@ public class ClasePrincipal {
 
 	}
 
-	private static void AsignarPuntosPC() {
-		switch (sumarPuntosPC) {
-		case NINGUNO:
-			puntosPC = 15;
-			sumarPuntosPC = PuntosAsignados.PRIMERO;
-			break;
-		case PRIMERO:
-			puntosPC = 30;
-			sumarPuntosPC = PuntosAsignados.SEGUNDO;
-			break;
-		case SEGUNDO:
-			puntosPC = 40;
-			sumarPuntosPC = PuntosAsignados.TERCERO;
-			break;
-		case TERCERO:
-			puntosPC += 0;
-			if (puntosUsuario < puntosPC) {
-				System.out.println("Ha ganado la PC");
-				jugadorQueGano = JugadorGanadores.PC;
-				estado = Estados.GANO;
-			} else if (puntosUsuario == puntosPC) {
-				System.out.println("Se ha empatado el partido");
-				jugadorQueGano = JugadorGanadores.INDEFINIDO;
-				estado = Estados.EMPATE;
+	private static void JugarDeuce() {
+		estado = Estados.EMPATE;
+		System.out.println("Se ha empatado el partido");
+		RealizarPausa();
+		System.out.println("*******Se realizara el Deuce*******");
+		do {
+			switch (turnoActual) {
+			case USUARIO:
+				TurnoUsuarioDEUCE(DireccionDegolpe, entrada);
+				break;
+			case PC:
+				TurnoPCDEUCE(DireccionDegolpe);
+				break;
 			}
+		} while (estado == Estados.EMPATE);
+	}
 
+	private static void TurnoUsuarioDEUCE(int DireccionDeSalida, Scanner entrada) {
+		System.out.printf("\nIngrese el numero de la Direccion deseada Pegar en el Deuce: \n1.DERECHA \n2.IZQUIERDA\n");
+		do {
+			DireccionDeSalida = 1; // entrada.nextInt();
+			if (DireccionDeSalida > 2 || DireccionDeSalida < 1) {
+				System.out.println("Ha ingresado una opcion no valida");
+			}
+		} while (DireccionDeSalida > 2 || DireccionDeSalida < 1);
+
+		if (DireccionDeSalida == 1) {
+			ladoUsuario = Lados.DERECHA;
+		} else {
+			ladoUsuario = Lados.IZQUIERDA;
+		}
+
+		if (ladoUsuario == ladoPC) {
+			turnoActual = Turnos.PC;
+			golpe = Golpes.ACERTO;
+			System.out.println(jugadorUsuario+" ha hacertado el golpe. :-)");
+			System.out.println("\nDireccion del Golpe: " + ladoUsuario);
+		} else {
+			golpe = Golpes.FALLO;
+			turnoActual = Turnos.PC;
+			System.out.println(jugadorUsuario+" ha Fallado el golpe. :-(");
+			System.out.println("\nDireccion del Golpe: " + ladoUsuario);
+
+			switch (JugadorConLaVentaja) {
+			case USUARIO:
+				VentajaPC = 0;
+				VentajaUSUARIO = 0;
+				JugadorConLaVentaja = JugadorConVentajas.NINGUNO;
+				break;
+			case NINGUNO:
+				VentajaPC += 1;
+				JugadorConLaVentaja = JugadorConVentajas.PC;
+				break;
+			case PC:
+				VentajaPC += 1;
+				break;
+			default:
+				System.out.println("Se ha salido del Rango de las posibilidades en el DEUCE");
+				break;
+			}
+			MostrarPuntosDeuce();
+			ComprobarDEUCE();
+			if (estado == Estados.EMPATE) {
+				RealizarSaque(DireccionDeSalida);
+			}
+		}
+
+	}
+
+	private static void TurnoPCDEUCE(int DireccionDeSalida) {
+		System.out.println("Turno de la PC en el DEUCE");
+		RealizarPausa();
+		do {// Realiza la asignacion la direccion en que le pega a la bola
+			DireccionDeSalida = rdm.nextInt(3);
+		} while (DireccionDeSalida < 1);
+
+		if (DireccionDeSalida == 1) {
+			ladoPC = Lados.DERECHA;
+		} else {
+			ladoPC = Lados.IZQUIERDA;
+		}
+
+		if (ladoPC == ladoUsuario) {
+			golpe = Golpes.ACERTO;
+			turnoActual = Turnos.USUARIO;
+			System.out.println(jugadorPC+" ha Acertado el golpe.");
+		} else {
+			golpe = Golpes.FALLO;
+			turnoActual = Turnos.USUARIO;
+			System.out.println(jugadorPC+" ha Fallado el golpe.");
+			switch (JugadorConLaVentaja) {
+			case PC:
+				VentajaPC = 0;
+				VentajaUSUARIO = 0;
+				JugadorConLaVentaja = JugadorConVentajas.NINGUNO;
+				break;
+			case NINGUNO:
+				VentajaUSUARIO += 1;
+				JugadorConLaVentaja = JugadorConVentajas.USUARIO;
+				break;
+			case USUARIO:
+				VentajaUSUARIO += 1;
+				break;
+			default:
+				System.out.println("Se ha salido del Rango de las posibilidades en el DEUCE");
+				break;
+			}
+			MostrarPuntosDeuce();
+			ComprobarDEUCE();
+			if (estado == Estados.EMPATE) {
+				RealizarSaque(DireccionDeSalida);
+			}
+		}
+	}
+	
+	private static void ComprobarDEUCE() {
+		if (VentajaPC == 2) {
+			System.out.println("Ha gando en el DUECE el jugador " + jugadorPC);
+			estado = Estados.GANO;
+			tipoDeJuego = TipoJuegos.NORMAL;
+			GameGanadoPC += 1;
+			jugadorQueGano = JugadorGanadores.PC;
+		} else if (VentajaUSUARIO == 2) {
+			tipoDeJuego = TipoJuegos.NORMAL;
+			estado = Estados.GANO;
+			GameGanadoUSUARIO += 1;
+			jugadorQueGano = JugadorGanadores.USUARIO;
+			System.out.println("Ha gando  en el DUECE el jugador " + jugadorUsuario);
+		}
+
+	}
+	private static void Ventaja() {
+
+	}
+	private static void MostrarPuntosDeuce() {
+		if(VentajaPC ==0 && VentajaUSUARIO==0) {
+			System.out.println("*-*-*-*-*-*-*-*-Se ha vuelto a tener el EMPATE. Se sigue jugando*-*-*-*-*-*-*-*-");
+			System.out.println("\nLos puntos actuales del Deuce de " + jugadorPC + " son : "+ puntosPC);
+			System.out.println("Los puntos actuales del Deuce de " + jugadorUsuario + " son : " + puntosUsuario);
+		}
+		if (VentajaPC == 1) {
+			System.out.println("\nLos puntos actuales del Deuce de " + jugadorPC + " son : AD");
+			System.out.println("Los puntos actuales del Deuce de " + jugadorUsuario + " son : " + puntosUsuario);
+		} else if (VentajaUSUARIO == 1) {
+			System.out.println("\nLos puntos actuales del Deuce de " + jugadorUsuario + " son : AD");
+			System.out.println("Los puntos actuales del Deuce de " + jugadorPC + " son : " + puntosPC);
+
+		}
+	}
+	private static void RealizarSaque(int DireccionDeSalida) {
+		switch (primerSaque) {
+		case USUARIO:
+			SaqueUsuario(DireccionDeSalida, entrada);
+			break;
+		case PC:
+			SaquePC(DireccionDeSalida);
 			break;
 
 		default:
 			break;
 		}
-	}
-
-	private static void AsignarPuntosUsuario() {
-		switch (sumarPuntosUsuario) {
-		case NINGUNO:
-			puntosUsuario = 15;
-			sumarPuntosUsuario = PuntosAsignados.PRIMERO;
-			break;
-		case PRIMERO:
-			puntosUsuario = 30;
-			sumarPuntosUsuario = PuntosAsignados.SEGUNDO;
-			break;
-		case SEGUNDO:
-			puntosUsuario = 40;
-			sumarPuntosUsuario = PuntosAsignados.TERCERO;
-			break;
-		case TERCERO:
-			puntosUsuario += 0;
-			if (puntosPC < puntosUsuario) {
-				System.out.println("Ha ganado El usuario");
-				jugadorQueGano = JugadorGanadores.USUARIO;
-				estado = Estados.GANO;
-			} else if (puntosUsuario == puntosPC) {
-				System.out.println("Se ha empatado el partido");
-				jugadorQueGano = JugadorGanadores.INDEFINIDO;
-				estado = Estados.EMPATE;
-			}
-			break;
-		default:
-			break;
-		}
 
 	}
-
 	private static void SaqueUsuario(int DireccionDeSalida, Scanner entrada) {
-		MostrarPuntos();
-		System.out.println("El jugador "+ jugadorUsuario +" esta realizando el SAQUE");
+		if (tipoDeJuego != TipoJuegos.DEUCE) {
+			MostrarPuntos();
+		}
+
+		System.out.println("El jugador " + jugadorUsuario + " esta realizando el SAQUE");
 		System.out.printf("\nIngrese el numero de la Direccion deseada hacer el SAQUE: \n1.DERECHA \n2.IZQUIERDA\n");
 		do {
 			DireccionDeSalida = 1;// entrada.nextInt();
@@ -400,8 +464,10 @@ public class ClasePrincipal {
 	}
 
 	private static void SaquePC(int DireccionDeSalida) {
-		MostrarPuntos();
-		System.out.println("El jugador "+jugadorPC+" esta realizando el SAQUE");
+		if (tipoDeJuego != TipoJuegos.DEUCE) {
+			MostrarPuntos();
+		}
+		System.out.println("El jugador " + jugadorPC + " esta realizando el SAQUE");
 		RealizarPausa();
 		do {// Realiza la asignacion la direccion en que sale la bola
 			DireccionDeSalida = rdm.nextInt(3);
@@ -416,23 +482,143 @@ public class ClasePrincipal {
 
 	}
 
-	private static void RealizarSaque(int DireccionDeSalida) {
-		switch (primerSaque) {
-		case USUARIO:
-			SaqueUsuario(DireccionDeSalida, entrada);
-			break;
-		case PC:
-			SaquePC(DireccionDeSalida);
-			break;
+	// Conjunto de Funciones que solo sirve para operaciones recurentes
+	// Las funciones de asignacion de puntos estan diseñadas para generar empates
+	// automaticos
+	private static void RestablecerGAME() {
+		estado = Estados.INDEFINIDO; // Esto hace que no tenga ningun ganador del GAME actual.
+		// Estos son los enum que tienen que reestablcerse para el gamen actual
+		jugadorQueGano = JugadorGanadores.INDEFINIDO;
+		sumarPuntosPC = PuntosAsignados.NINGUNO;
+		sumarPuntosUsuario = PuntosAsignados.NINGUNO;
+		puntosPC = 0;
+		puntosUsuario = 0;
+		// *******************************
+		if (games != JuegosRealizados.FINSET) {
+			switch (primerSaque) {// Aqui se hace el cambio de SAQUE despues de terminar un GAME
+			case PC:
+				primerSaque = SaqueInciales.USUARIO;
+				RealizarSaque(DireccionDegolpe);
+				break;
+			case USUARIO:
+				primerSaque = SaqueInciales.PC;
+				RealizarSaque(DireccionDegolpe);
+				break;
+			default:
+				break;
+			}
+		}
+	}
 
+	private static void AsignarPuntosUsuario() {
+		switch (sumarPuntosUsuario) {
+		case NINGUNO:
+			puntosUsuario = 15;
+			sumarPuntosUsuario = PuntosAsignados.PRIMERO;
+			break;
+		case PRIMERO:
+			puntosUsuario = 30;
+			sumarPuntosUsuario = PuntosAsignados.SEGUNDO;
+			break;
+		case SEGUNDO:
+			puntosUsuario = 40;
+			sumarPuntosUsuario = PuntosAsignados.TERCERO;
+			if(puntosPC <30) {
+				System.out.println(jugadorPC+ " ganara si anota un punto mas. A menos que " + jugadorUsuario + " anote un punto mas.\n");
+			}
+			break;
+		case TERCERO:
+			if (puntosPC <= 30) {
+				GameGanadoUSUARIO += 1;
+				System.out.println("Ha ganado " + jugadorUsuario);
+				jugadorQueGano = JugadorGanadores.USUARIO;
+				estado = Estados.GANO;
+			} else if (puntosUsuario == puntosPC) {
+				tipoDeJuego = TipoJuegos.DEUCE;
+				JugarDeuce();
+			}
+			break;
 		default:
 			break;
 		}
 
 	}
+	private static void AsignarPuntosPC() {
+		switch (sumarPuntosPC) {
+		case NINGUNO:
+			puntosPC = 15;
+			sumarPuntosPC = PuntosAsignados.PRIMERO;
+			break;
+		case PRIMERO:
+			puntosPC = 30;
+			sumarPuntosPC = PuntosAsignados.SEGUNDO;
+			break;
+		case SEGUNDO:
+			puntosPC = 40;
+			sumarPuntosPC = PuntosAsignados.TERCERO;
+			if(puntosUsuario <30) {
+				System.out.println(jugadorPC+ " ganara si anota un punto mas. A menos que " + jugadorUsuario + " anote un punto mas.\n");
+			}
+			break;
+		case TERCERO:
+			puntosPC += 0;
+			if (puntosUsuario <= 30) {
+				System.out.println("Ha ganado " + jugadorPC);
+				GameGanadoPC += 1;
+				jugadorQueGano = JugadorGanadores.PC;
+				estado = Estados.GANO;
+			} else if (puntosUsuario == puntosPC) {
+				tipoDeJuego = TipoJuegos.DEUCE;
+				JugarDeuce();
+			}
+
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	private static void SumarMarcador() {
+		switch (jugadorQueGano) {
+		case PC:
+			marcadorPC += 1;
+			break;
+		case USUARIO:
+			marcadorUsuario += 1;
+			break;
+
+		default:
+			break;
+		}
+		if (marcadorPC == 6) {
+			System.out.println("Gano el SET actual " + jugadorPC);
+			games = JuegosRealizados.FINSET;
+			MostrarPuntosDeSet();
+		} else if (marcadorUsuario == 6) {
+			System.out.println("Gano el SET acutal " + jugadorUsuario);
+			games = JuegosRealizados.FINSET;
+			MostrarPuntosDeSet();
+		}
+
+	}
+
+	private static void MostrarPuntosDeGAME() {
+		System.out.println("******--------********");
+		System.out.println("Los puntos de " + jugadorUsuario + " al final del GAME son :" + puntosUsuario);
+		System.out.println("Los puntos de " + jugadorPC + " al final del GAME son :" + puntosPC);
+		System.out.println("******--------********");
+		System.out.println("Resultado General:");
+		System.out.println("Los GAME ganado por " + jugadorUsuario + " son: " + GameGanadoUSUARIO);
+		System.out.println("Los GAME ganado por " + jugadorPC + " son: " + GameGanadoPC);
+
+	}
+	private static void MostrarPuntosDeSet() {
+		System.out.println("Falta definir como mostrar los puntos al final de los SETs");
+	}
 
 	private static void RealizarPausa() {
-		// MostrarPuntos();
+		System.out.println();
 		int TiempoDeEspera = 1000;
 		try {
 			for (int i = 0; i < 10; i++) {
@@ -445,12 +631,12 @@ public class ClasePrincipal {
 			Thread.currentThread().interrupt();
 		}
 	}
-
 	private static void MostrarPuntos() {
 		System.out.println("\nLos puntos actuales de " + jugadorUsuario + " son : " + puntosUsuario);
 		System.out.println("Los puntos actuales de " + jugadorPC + " son : " + puntosPC);
 	}
 
+	// Funciones que le colocan el nombre a los jugadores
 	private static String ColocarNombreDePC(String jugadorPC, String[] JugadoresTenis) {
 		jugadorPC = JugadoresTenis[rdm.nextInt(JugadoresTenis.length)];
 		System.out.printf("\nEl jugador 2: " + jugadorPC);
